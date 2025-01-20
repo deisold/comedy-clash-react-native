@@ -1,0 +1,7 @@
+src/utils/utils.ts
+src/common/CommonTypes.ts
+src/App.tsx
+index.js 
+# Ignore generated files
+comedy-clash-react-native/src/utils/types/*
+
