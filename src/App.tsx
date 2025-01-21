@@ -32,14 +32,19 @@ import '@walletconnect/react-native-compat'
 
 import { AppKit, useAppKit } from '@reown/appkit-ethers-react-native'
 import { useBlockchainState, Web3MobileStateProvider } from './components/providers/Web3MobileStateProvider';
+import { AppProvider } from './components/providers/AppProviders';
 
 const ConnectView = () => {
   const { open } = useAppKit()
-  const { isConnected } = useBlockchainState();
-  const title = isConnected ? "Connected" : "Connect";
+  const { isConnected, isMockData } = useBlockchainState();
+  const title = isMockData ? "Using Mock Data" : (isConnected ? "Connected" : "Connect");
   return (
     <>
-      <Button onPress={() => open()} title={title} />
+      <Button
+        onPress={() => open()}
+        title={title}
+        disabled={isMockData}
+      />
     </>
   )
 }
@@ -55,25 +60,26 @@ function App(): React.JSX.Element {
   return (
     <>
       <Web3MobileStateProvider>
-        <SafeAreaView style={backgroundStyle}>
-          <StatusBar
-            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-            backgroundColor={backgroundStyle.backgroundColor}
-          />
-          <View style={styles.sectionContainer}>
-            <Text
-              style={[
-                styles.sectionTitle,
-                {
-                  color: isDarkMode ? Colors.white : Colors.black,
-                },
-              ]}>
-              Hello World
-            </Text>
-            <ConnectView />
-          </View>
-
-        </SafeAreaView>
+        <AppProvider>
+          <SafeAreaView style={backgroundStyle}>
+            <StatusBar
+              barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+              backgroundColor={backgroundStyle.backgroundColor}
+            />
+            <View style={styles.sectionContainer}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  {
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  },
+                ]}>
+                Hello World
+              </Text>
+              <ConnectView />
+            </View>
+          </SafeAreaView>
+        </AppProvider>
       </Web3MobileStateProvider>
       <AppKit />
     </>
