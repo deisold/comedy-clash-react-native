@@ -3,9 +3,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { isWriteProvider, getNetwork, getSigner } from '../../utils/web3';
 import { ethers, Provider, Signer } from 'ethers';
-import { NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID } from '@env';
+import { NEXT_PUBLIC_USE_MOCKDATA, NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID } from '@env';
 import '@walletconnect/react-native-compat'
-import { createAppKit, defaultConfig, useAppKitProvider} from '@reown/appkit-ethers-react-native'
+import { createAppKit, defaultConfig, useAppKitProvider } from '@reown/appkit-ethers-react-native'
+import _ from 'lodash';
 
 // 2. Create config
 const metadata = {
@@ -42,6 +43,7 @@ createAppKit({
 })
 
 interface Web3MobileStateType {
+    isMockData: boolean;
     provider: Provider | null;
     signer: Signer | null;
     walletAddress: string | null;
@@ -55,8 +57,10 @@ interface Web3MobileStateType {
 export const Web3MobileStateContext = createContext<Web3MobileStateType | undefined>(undefined);
 
 export function Web3MobileStateProvider({ children }: { children: ReactNode }) {
+    const isMockData: boolean = JSON.parse(NEXT_PUBLIC_USE_MOCKDATA);
 
     const [state, setState] = useState<Web3MobileStateType>({
+        isMockData,
         provider: null,
         signer: null,
         walletAddress: null,
@@ -68,16 +72,17 @@ export function Web3MobileStateProvider({ children }: { children: ReactNode }) {
     });
 
     const updateBlockchainState = async (provider: ethers.Provider | null) => {
-        console.log(`updateBlockchainState: provider=${provider}`);
+        console.log(`Web3MobileStateProvider: updateBlockchainState: provider=${provider}`);
 
         try {
             const network = await getNetwork(provider);
             const canWrite = isWriteProvider(provider);
             const signer = canWrite ? await getSigner(provider) : null;
             const walletAddress = signer ? await signer.getAddress() : null;
-            console.log(`updateBlockchainState: canWrite=${canWrite}, signer=${signer}, walletAddress=${walletAddress}`);
+            console.log(`Web3MobileStateProvider: updateBlockchainState: canWrite=${canWrite}, signer=${signer}, walletAddress=${walletAddress}`);
 
             setState({
+                isMockData,
                 provider,
                 signer,
                 walletAddress: walletAddress,
@@ -85,7 +90,7 @@ export function Web3MobileStateProvider({ children }: { children: ReactNode }) {
                 isConnected: !!walletAddress,
                 canWrite,
                 isLoading: false,
-                error: null
+                error: null,
             });
         } catch (error) {
             console.error('Failed to update blockchain state:', error);
@@ -97,14 +102,17 @@ export function Web3MobileStateProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    // Initial setup
-    // const { open } = useAppKit()
     const { walletProvider } = useAppKitProvider();
     useEffect(() => {
-        console.log('walletProvider:', walletProvider);
-        const provider = walletProvider ? new ethers.BrowserProvider(walletProvider) : null;
-        console.log(`BrowserProvider: ${provider}`);
-        updateBlockchainState(provider);
+        console.log(`Web3MobileStateProvider: walletProvider: ${walletProvider}, isMockData: ${isMockData}`);
+        if (isMockData) {
+            console.log(`Web3MobileStateProvider: using MockData: provider=null`);
+            updateBlockchainState(null);    
+        } else {
+            const provider = walletProvider ? new ethers.BrowserProvider(walletProvider) : null;
+            console.log(`Web3MobileStateProvider: using BrowserProvider: ${provider}`);
+            updateBlockchainState(provider);
+        }
     }, [walletProvider]);
 
     Web3MobileStateContext.displayName = 'BlockchainStateContext';
@@ -123,7 +131,7 @@ export function Web3MobileStateProvider({ children }: { children: ReactNode }) {
 export function useBlockchainState() {
     const context = useContext(Web3MobileStateContext);
     if (context === undefined) {
-        throw new Error('useBlockchainState must be used within a BlockchainStateProvider');
+        throw new Error('Web3MobileStateProvider: useBlockchainState must be used within a BlockchainStateProvider');
     }
     return context;
 }
