@@ -1,5 +1,3 @@
-"use client"
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { isWriteProvider, getNetwork, getSigner } from '../../utils/web3';
 import { ethers, Provider, Signer } from 'ethers';
@@ -7,6 +5,7 @@ import { NEXT_PUBLIC_USE_MOCKDATA, NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID } from '
 import '@walletconnect/react-native-compat'
 import { createAppKit, defaultConfig, useAppKitProvider } from '@reown/appkit-ethers-react-native'
 import _ from 'lodash';
+import { log } from 'console';
 
 // 2. Create config
 const metadata = {
@@ -58,7 +57,7 @@ export const Web3MobileStateContext = createContext<Web3MobileStateType | undefi
 
 export function Web3MobileStateProvider({ children }: { children: ReactNode }) {
     const isMockData: boolean = JSON.parse(NEXT_PUBLIC_USE_MOCKDATA);
-
+    console.log(`Web3MobileStateProvider: isMockData=${isMockData}`)
     const [state, setState] = useState<Web3MobileStateType>({
         isMockData,
         provider: null,

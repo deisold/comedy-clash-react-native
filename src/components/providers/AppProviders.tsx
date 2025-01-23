@@ -11,6 +11,7 @@ import _ from 'lodash';
 
 interface AppContextType {
     isLoading: boolean;
+    isReady: boolean,
     comedyTheaterRepo: ComedyTheaterRepoType | null;
     comedyClashRepo: ComedyClashRepoType | null;
     isManager: boolean;
@@ -26,12 +27,14 @@ interface AppProviderProps {
 export function AppProvider({ children }: AppProviderProps) {
     const [state, setState] = useState<{
         isLoading: boolean;
+        isReady: boolean;
         error: unknown;
         comedyTheaterRepo: ComedyTheaterRepoType | null;
         comedyClashRepo: ComedyClashRepoType | null;
         isManager: boolean;
     }>({
         isLoading: true,
+        isReady: false,
         error: null,
         comedyTheaterRepo: null,
         comedyClashRepo: null,
@@ -41,9 +44,8 @@ export function AppProvider({ children }: AppProviderProps) {
     const { isLoading: blockchainInitLoading, provider, signer, error: blockchainError } = useBlockchainState();
     console.log(`AppProvider: blockchainInitLoading=${blockchainInitLoading}`);
 
-
-    console.log('Use Mock Data:', NEXT_PUBLIC_USE_MOCKDATA);
     const useMockData: boolean = JSON.parse(NEXT_PUBLIC_USE_MOCKDATA);
+    console.log(`AppProvider: useMockData=${useMockData}`);
     const comedyTheaterAddress: string = NEXT_PUBLIC_COMEDY_THEATER_ADDRESS;
 
     useEffect(() => {
@@ -57,6 +59,7 @@ export function AppProvider({ children }: AppProviderProps) {
                 console.log(`AppProvider: init: (re)setting state`);
                 setState({
                     isLoading: false,
+                    isReady: isReady,
                     error: null,
                     comedyTheaterRepo: null,
                     comedyClashRepo: null,
@@ -97,6 +100,7 @@ export function AppProvider({ children }: AppProviderProps) {
 
                 setState({
                     isLoading: false,
+                    isReady: true,
                     error: null,
                     comedyTheaterRepo: theaterRepo,
                     comedyClashRepo: clashRepo,
@@ -119,6 +123,7 @@ export function AppProvider({ children }: AppProviderProps) {
     return (
         <AppContext.Provider value={{
             isLoading: state.isLoading,
+            isReady: state.isReady,
             comedyTheaterRepo: state.comedyTheaterRepo,
             comedyClashRepo: state.comedyClashRepo,
             isManager: state.isManager,
