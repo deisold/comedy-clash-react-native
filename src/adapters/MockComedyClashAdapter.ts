@@ -20,7 +20,10 @@ export const MockComedyClashAdapter = (_web3Provider: Provider, _signer: Signer 
     };
     return ({
         getPrecision: async () => BigInt(10 ** 18),
-        getDescription: async () => "Desc-" + address,
+        getDescription: async () => {
+            await delay(defaultDelayMS);
+            return "Desc-" + address;
+        },
         isClosed: async () => closed[address],
         getSubmissionCount: async (): Promise<bigint> => BigInt(submissions),
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, FlatList } from 'react-native';
 
 import ConnectToBlockchainView from '../views/ConnectView';
 import { useAppContext } from '../components/providers/AppProviders';
 import { globalStyles } from '../views/Styles';
+import { ShowListItemHeader, ShowListItemRow } from '../views/ShowListItem';
 
 export default function HomeScreen() {
 
@@ -11,22 +12,37 @@ export default function HomeScreen() {
     const [showAmount, setShowAmount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    useEffect(() => {
-        const init = async () => {
-            try {
-                const amount: number = await comedyTheaterRepo!!.getShowAmount();
-                console.log(`amount=${amount}`);
-                setShowAmount(amount);
-            } catch (err) {
-                console.error(err);
-            }
-        };
+    const [reloadKey, setReloadKey] = useState(0); // State to trigger re-render
+    const [refreshing, setRefreshing] = useState(false); // Refreshing state
 
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const amount: number = await comedyTheaterRepo!!.getShowAmount();
+            console.log(`amount=${amount}, isManager=${isManager}`);
+            setShowAmount(amount);
+        } catch (err) {
+            console.error(err);
+        } finally {
+
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
         if (comedyTheaterRepo) {
-            init();
+            fetchData();
         }
     }, [isReady, comedyTheaterRepo]);
 
+    const onRefresh = async () => {
+        console.log(`HomeScreen: onRefresh=${reloadKey}`);
+
+        setRefreshing(true);
+        await fetchData(); // Reuse the fetch logic
+        setRefreshing(false);
+        setReloadKey(prevKey => prevKey + 1);
+    };
 
     const handleAddShow = () => {
         console.log('handleAddShow');
@@ -48,16 +64,32 @@ export default function HomeScreen() {
                 isLoading ? <View style={styles.centeredContent}>
                     <Text>Loading...</Text>
                 </View> :
-                    <View style={styles.showContainer}>
+                    <View style={globalStyles.container}>
                         <Text style={globalStyles.sectionTitle}>
                             The number of shows: {showAmount}
                         </Text>
-                        <View style={{ alignSelf: 'center', display: isManager ? 'flex' : 'none' }}>
+                        <ShowListItemHeader />
+                        <FlatList
+                            data={[...Array(showAmount).keys()].map(item => ({ id: item.toString(), value: item }))}
+                            extraData={reloadKey} // Ensure this triggers re-render
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => <ShowListItemRow index={item.value} />}
+                            refreshing={refreshing} // Pull-to-refresh state
+                            onRefresh={onRefresh} // Call the refresh function on pull
+                        />
+                        <View style={[styles.bottomContainer, { display: isManager ? 'flex' : 'none' }]}>
                             <Button title="Add new Show"
                                 onPress={() => { handleAddShow() }}
                             />
-                            
                         </View>
+
+                        {/* <View style={styles.bottomContainer}>
+                            <View style={{ alignSelf: 'center', display: isManager ? 'flex' : 'none' }}>
+                                <Button title="Add new Show"
+                                    onPress={() => { handleAddShow() }}
+                                />
+                            </View>
+                        </View> */}
                     </View>
             }
         </View>
@@ -89,5 +121,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between', // Centers vertically
         alignItems: 'flex-start', // Centers horizontally
     },
-
+    bottomContainer: {
+        alignSelf: 'center',
+        marginTop: 12,
+    }
 });
