@@ -5,6 +5,14 @@ export const globalStyles = StyleSheet.create({
     sectionContainer: {
         flex: 1, // Ensures SafeAreaView takes up the whole screen
     },
+    mainTitle: {
+        fontSize: 42,
+        fontWeight: '600',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        padding: 10,
+        paddingTop: 20,
+    },
     sectionTitle: {
         fontSize: 24,
         fontWeight: '600',
@@ -42,6 +50,11 @@ export const globalStyles = StyleSheet.create({
     },
     container: {
         flex: 1,
+    },
+    containerPadding: {
+        flex: 1,
+        paddingHorizontal: 12,
+        paddingVertical: 24,
     },
 });
 
