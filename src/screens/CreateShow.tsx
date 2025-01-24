@@ -25,6 +25,7 @@ export default function CreateShow() {
     useEffect(() => {
         const isManager = appIsManager;
         setIsManager(isManager);
+        setSuccessMessage('YES!');
         if (!isManager) {
             setErrorMessage('You are not authorized to create a show');
         }
@@ -121,13 +122,15 @@ export default function CreateShow() {
                 </View>
                 <View style={[styles.bottomContainer, { display: isManager ? 'flex' : 'none' }]}>
                     <Button title="Save"
-                        disabled={!isManager}
+                        disabled={!isManager || submitted}
                         onPress={handleSubmit}
                     />
                     {loading && <View style={globalStyles.overlay}>
                         <ActivityIndicator animating={loading} size="small" color={Colors.dark} />
                     </View>}
+
                 </View>
+                <Text style={{ color: Colors.green, fontSize: 14, marginTop: 12 }}>{successMessage}</Text>
             </View>
         </SafeAreaView>
     )
