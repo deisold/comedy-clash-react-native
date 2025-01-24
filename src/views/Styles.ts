@@ -9,7 +9,6 @@ export const globalStyles = StyleSheet.create({
         fontSize: 42,
         fontWeight: '600',
         alignItems: 'flex-start',
-        justifyContent: 'flex-start',
         padding: 10,
         paddingTop: 20,
     },
@@ -56,6 +55,23 @@ export const globalStyles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 12,
         paddingVertical: 24,
+    },
+ 
+    stackContainer: {
+        position: 'relative', // Enables child absolute positioning
+        paddingStart: 10,
+    },
+    overlay: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 10,
+        right: 0,
+        bottom: 0,
+        padding: 0, // Ensure no padding is added
+        margin: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

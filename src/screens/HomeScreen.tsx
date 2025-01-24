@@ -6,7 +6,7 @@ import { useAppContext } from '../components/providers/AppProviders';
 import { globalStyles } from '../views/Styles';
 import { ShowListItemHeader, ShowListItemRow } from '../views/ShowListItem';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: { navigation: any }) {
 
     const { isReady, comedyTheaterRepo, isManager } = useAppContext();
     const [showAmount, setShowAmount] = useState<number>(0);
@@ -45,7 +45,7 @@ export default function HomeScreen() {
     };
 
     const handleAddShow = () => {
-        console.log('handleAddShow');
+        navigation.navigate('CreateShow');
     }
 
     const ready = isReady;

@@ -2,6 +2,7 @@ import { useAppContext } from '../components/providers/AppProviders';
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Button, ActivityIndicator } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { globalStyles } from './Styles';
 
 export function ShowListItemHeader() {
     return (
@@ -122,14 +123,14 @@ export function ShowListItemRow({ index }: { index: number }) {
                         />
                         {!showDetails.isClosed && (
                             <>
-                                <View style={[styles.stackContainer, { backgroundColor: Colors.red, borderRadius: 5 }]}>
+                                <View style={[globalStyles.stackContainer, { backgroundColor: Colors.red, borderRadius: 5 }]}>
                                     <Button
                                         title="Close"
                                         color="darkred"
                                         onPress={handleClose}
                                         disabled={showDetails.address == null || isClosing}
                                     />
-                                    {isClosing && <View style={styles.overlay}>
+                                    {isClosing && <View style={globalStyles.overlay}>
                                         <ActivityIndicator animating={isClosing} size="small" color={Colors.dark} />
                                     </View>}
 
@@ -158,21 +159,5 @@ const styles = StyleSheet.create({
 
     columnButtons: {
         alignItems: 'flex-start', // Center content horizontally
-    },
-    stackContainer: {
-        position: 'relative', // Enables child absolute positioning
-        paddingStart: 10,
-    },
-    overlay: {
-        flex: 1,
-        position: 'absolute',
-        top: 0,
-        left: 10,
-        right: 0,
-        bottom: 0,
-        padding: 0, // Ensure no padding is added
-        margin: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
 });
