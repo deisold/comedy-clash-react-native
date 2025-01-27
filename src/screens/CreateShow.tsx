@@ -2,8 +2,9 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useAppContext } from "../components/providers/AppProviders";
 import { globalStyles } from "../views/Styles";
 import { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, TextInput, StyleSheet, Button, ActivityIndicator } from "react-native";
+import { View, Text, SafeAreaView, Keyboard, StyleSheet, Button, ActivityIndicator } from "react-native";
 import { LabeledInput } from "../views/LabeledInput";
+import Toast from 'react-native-toast-message';
 
 interface ErrorMessages {
     description: string;
@@ -17,7 +18,6 @@ export default function CreateShow() {
     const [days, setDays] = useState<string>('');
     const [isManager, setIsManager] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>('');
     const [successMessage, setSuccessMessage] = useState<string>('');
     const [errors, setErrors] = useState<ErrorMessages>({ description: '', days: '' });
     const [submitted, setSubmitted] = useState<boolean>(false);
@@ -27,7 +27,7 @@ export default function CreateShow() {
         setIsManager(isManager);
 
         if (!isManager) {
-            setErrorMessage('You are not authorized to create a show');
+            Toast.show({ type: 'error', position: 'bottom', text2: 'You are not authorized to create a show!' });
         }
     }, [isManager]);
 
@@ -69,25 +69,30 @@ export default function CreateShow() {
 
     const handleSubmit = async () => {
         setSubmitted(true);
+        Keyboard.dismiss();
 
         if (validate()) {
+            Keyboard.dismiss();
             const controller = new AbortController();
 
             try {
                 setLoading(true);
-                setErrorMessage('');
 
                 const txResponse = await comedyTheaterRepo!!.addShow(description, Number(days));
-                setSuccessMessage('Transcation successfully created - waiting for confirmation!');
+                var message = 'Transcation successfully created - waiting for confirmation!';
+                setSuccessMessage(message);
+                Toast.show({ type: 'success', position: 'bottom', text2: message });
+                console.log(`addShow: ${message}`);
 
-                console.log('addShow: tx created - waiting for confirmation');
                 await txResponse.wait();
-                console.log('addShow: tx confirmed');
 
-                setSuccessMessage('Show successfully created!');
+                message = 'Transaction confirmed!';
+                setSuccessMessage(message);
+                Toast.show({ type: 'success', position: 'bottom', text2: message });
+                console.log(`addShow: ${message}`);
             } catch (error: any) {
                 if (controller.signal.aborted) return;
-
+                Toast.show({ type: 'error', position: 'bottom', text2: 'Error creating show!' });
                 console.error('Error creating show:', error);
             } finally {
                 if (!controller.signal.aborted) {
@@ -101,7 +106,6 @@ export default function CreateShow() {
 
     return (
         <SafeAreaView style={globalStyles.containerPadding}>
-
             <View style={globalStyles.sectionContainer}>
                 <Text style={[globalStyles.mainTitle, { textAlign: 'center' }]}>
                     Create a show

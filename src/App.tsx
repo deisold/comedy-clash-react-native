@@ -39,11 +39,49 @@ import { AppProvider } from './components/providers/AppProviders';
 import { enableScreens } from 'react-native-screens';
 import RootNavigator from './navigation/RootNavigator';
 import { ConnectionProvider } from './components/providers/ConnectionProvider';
-
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 //
 enableScreens();
 
 function App(): React.JSX.Element {
+
+  const toastConfig = {
+    success: (props: any) => (
+      <BaseToast
+        {...props}
+        style={{ borderLeftColor: 'green' }}
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        line1NumberOfLines={2}
+        text1Style={{
+          fontSize: 18,
+          fontWeight: '600'
+        }}
+        text2Style={{
+          fontSize: 16,
+          fontWeight: '400'
+        }}
+        text1='Success'
+        
+      />
+    ),
+    error: (props: any) => (
+      <ErrorToast
+        {...props}
+        style={{ borderLeftColor: 'red' }}
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        line1NumberOfLines={2}
+        text1Style={{
+          fontSize: 18,
+          fontWeight: '600'
+        }}
+        text2Style={{
+          fontSize: 16,
+          fontWeight: '400'
+        }}
+        text1='Error'
+      />
+    ),
+  };
 
   return (
     <>
@@ -53,6 +91,7 @@ function App(): React.JSX.Element {
         </AppProvider>
       </Web3MobileStateProvider>
       <AppKit />
+      <Toast config={toastConfig} />
     </>
   );
 }
