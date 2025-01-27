@@ -25,7 +25,7 @@ export default function CreateShow() {
     useEffect(() => {
         const isManager = appIsManager;
         setIsManager(isManager);
-        setSuccessMessage('YES!');
+
         if (!isManager) {
             setErrorMessage('You are not authorized to create a show');
         }
