@@ -2,56 +2,40 @@ import { RouteProp } from "@react-navigation/native";
 import { useShowDetailsViewModel } from "./ShowDetailsViewModel";
 import { RootStackParamList } from "../../navigation/RootNavigator";
 import { globalStyles } from "../../components/views/Styles";
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, ActivityIndicator, Button, TouchableOpacity, StyleSheet, FlatList } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-
-
-const CardView = ({ title, description }: { title: string, description: string }) => {
-    return (
-        <TouchableOpacity style={[styles.card, { backgroundColor: 'lightgray' }]}>
-            <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{title}</Text>
-                <Text style={styles.cardDescription}>{description}</Text>
-            </View>
-        </TouchableOpacity>
-    );
-};
-
-const styles = StyleSheet.create({
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 1,
-            height: 1,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 2,
-        elevation: 1,
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    cardContent: {
-        flex: 1,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    cardDescription: {
-        fontSize: 16,
-        lineHeight: 24,
-    },
-});
+import { showToastSuccess, showToastError } from "../../utils/utils";
+import { CreateShowViewModelEvent } from "../createShow/CreateShowViewModel";
+import { ModelEvents } from "../../utils/CommonEvents";
+import { SubmissionListItem } from "../../components/views/SubmissionListItem/SubmissionListItem";
+import { useBlockchainState } from "../../components/providers/Web3MobileStateProvider";
 
 export const ShowDetails = ({ route }: { route: RouteProp<RootStackParamList, 'ShowDetails'> }) => {
     const { showAddress } = route.params;
-    const { loading, details, actions, error } = useShowDetailsViewModel(showAddress);
+    const { canWrite, walletAddress } = useBlockchainState();
+
+    const { loading, details, actions, error, eventEmitter } = useShowDetailsViewModel(showAddress);
+
+    useEffect(() => {
+        const handleSuccess = (event: ModelEvents) => {
+            console.log(`handleSuccess: ${event.message}`);
+            showToastSuccess(event.message);
+        };
+
+        const handleError = (event: CreateShowViewModelEvent) => {
+            console.log(`handleError: ${event.message}`);
+            showToastError(event.message);
+        };
+
+        // Attach the listeners
+        eventEmitter.on('success', handleSuccess);
+        eventEmitter.on('error', handleError);
+
+        return () => {
+            eventEmitter.removeAllListeners();
+        };
+    }, []); // Run only once on mount
 
     return (
         <View style={globalStyles.containerPadding}>
@@ -78,7 +62,9 @@ export const ShowDetails = ({ route }: { route: RouteProp<RootStackParamList, 'S
                     data={details.submissions}
                     renderItem={({ item }) =>
                         <View style={{ marginTop: 8 }}>
-                            <CardView title={item.name} description={item.topic} />
+                            <SubmissionListItem submission={item}
+                                precision={details.precision}
+                                isClosed={details.isClosed} />
                         </View>}
                 />
             </View>}

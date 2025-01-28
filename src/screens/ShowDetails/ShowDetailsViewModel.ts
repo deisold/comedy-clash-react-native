@@ -3,12 +3,12 @@ import { useAppContext } from "../../components/providers/AppProviders";
 import { Submission } from "../../data/submission";
 import { ModelEventEmitter } from "../../utils/CommonEvents";
 
-
 export interface ShowDetailsState {
     description: string;
     submissionCount: number;
     submissions: Submission[];
     isClosed: boolean;
+    precision: bigint;
 }
 
 export interface ShowDetailsViewModelActions {
@@ -28,6 +28,7 @@ export const useShowDetailsViewModel = (showAddress: string) => {
         submissionCount: 0,
         submissions: [],
         isClosed: false,
+        precision: 0n,
     });
 
     const buildOrderedSubmissions = async (submissionCount: number) => {
@@ -64,12 +65,15 @@ export const useShowDetailsViewModel = (showAddress: string) => {
             if (controller.signal.aborted) return;
             const closed = await comedyClashRepo.isClosed(showAddress);
             if (controller.signal.aborted) return;
+            const precision = await comedyClashRepo.getPrecision(showAddress);
+            if (controller.signal.aborted) return;
 
             setDetails({
                 description: showDescription,
                 submissionCount: submissionCount,
                 submissions: submissions,
                 isClosed: closed,
+                precision: precision,   
             });
         }
         catch (err: any) {
@@ -104,6 +108,7 @@ export const useShowDetailsViewModel = (showAddress: string) => {
         loading,
         details,
         error,
-        actions
+        actions,
+        eventEmitter
     }
 }
