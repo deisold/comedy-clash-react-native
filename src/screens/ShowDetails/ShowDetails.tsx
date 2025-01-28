@@ -1,7 +1,7 @@
 import { RouteProp } from "@react-navigation/native";
 import { useShowDetailsViewModel } from "./ShowDetailsViewModel";
 import { RootStackParamList } from "../../navigation/RootNavigator";
-import { globalStyles } from "../../views/Styles";
+import { globalStyles } from "../../components/views/Styles";
 import React from "react";
 import { View, Text, ActivityIndicator, Button, TouchableOpacity, StyleSheet, FlatList } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";

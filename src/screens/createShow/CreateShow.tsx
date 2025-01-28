@@ -1,8 +1,8 @@
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import { globalStyles } from "../../views/Styles";
+import { globalStyles } from "../../components/views/Styles";
 import { useEffect } from "react";
 import { View, Text, SafeAreaView, Keyboard, StyleSheet, Button, ActivityIndicator } from "react-native";
-import { LabeledInput } from "../../views/LabeledInput";
+import { LabeledInput } from "../../components/views/LabeledInput";
 import { useCreateShowViewModel } from './CreateShowViewModel';
 import { showToastError } from "../../utils/utils";
 import { showToastSuccess } from "../../utils/utils";

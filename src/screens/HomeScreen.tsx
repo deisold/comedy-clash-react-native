@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Button, FlatList } from 'react-native';
 
-import ConnectToBlockchainView from '../views/ConnectView';
+import ConnectToBlockchainView from '../components/views/ConnectView';
 import { useAppContext } from '../components/providers/AppProviders';
-import { globalStyles } from '../views/Styles';
-import { ShowListItemHeader, ShowListItemRow } from '../views/ShowListItem';
+import { globalStyles } from '../components/views/Styles';
+import { ShowListItemHeader, ShowListItemRow } from '../components/views/ShowListItem';
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
 
