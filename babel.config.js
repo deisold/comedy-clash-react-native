@@ -14,6 +14,15 @@ module.exports = {
         verbose: false      // Verbose output for debugging (optional)
       }
     ],
-    'react-native-reanimated/plugin' // Reanimated plugin must always be the last entry
+    'react-native-reanimated/plugin', // Reanimated plugin must always be the last entry
+    [
+      'module-resolver',
+      {
+        root: ['./src'],
+        alias: {
+          '@': './src',
+        },
+      },
+    ],
   ]
 };
