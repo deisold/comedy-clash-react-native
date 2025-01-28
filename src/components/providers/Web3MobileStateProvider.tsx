@@ -75,7 +75,7 @@ export function Web3MobileStateProvider({ children }: { children: ReactNode }) {
 
         try {
             const network = await getNetwork(provider);
-            const canWrite = isWriteProvider(provider);
+            const canWrite = isMockData || isWriteProvider(provider);
             const signer = canWrite ? await getSigner(provider) : null;
             const walletAddress = signer ? await signer.getAddress() : null;
             console.log(`Web3MobileStateProvider: updateBlockchainState: canWrite=${canWrite}, signer=${signer}, walletAddress=${walletAddress}`);
