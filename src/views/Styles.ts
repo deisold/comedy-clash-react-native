@@ -10,7 +10,7 @@ export const globalStyles = StyleSheet.create({
         fontWeight: '600',
         alignItems: 'flex-start',
         padding: 10,
-        paddingTop: 20,
+        paddingVertical: 20,
     },
     sectionTitle: {
         fontSize: 24,
@@ -26,7 +26,6 @@ export const globalStyles = StyleSheet.create({
         fontWeight: '400',
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
-        padding: 10,
         paddingTop: 20,
     },
     highlight: {
@@ -39,7 +38,7 @@ export const globalStyles = StyleSheet.create({
     sheetContent: {
         backgroundColor: '#ffffff', // White background for the content
         padding: 20, // Padding inside the content
-        alignItems: 'center', // Center the content horizontally
+        alignItems: 'flex-start', // Center the content horizontally
         justifyContent: 'center', // Center the content vertically
     },
     sheetText: {

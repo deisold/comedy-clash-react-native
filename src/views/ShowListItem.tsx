@@ -28,7 +28,7 @@ interface ShowDetailsState {
     submissionCount: number;
 }
 
-export function ShowListItemRow({ index }: { index: number }) {
+export function ShowListItemRow({ index, onShowDetails }: { index: number, onShowDetails: (showAddress: string) => void }) {
     const { comedyTheaterRepo, comedyClashRepo } = useAppContext();
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
@@ -118,7 +118,7 @@ export function ShowListItemRow({ index }: { index: number }) {
                     <View style={{ flexDirection: 'row', }}>
                         <Button
                             title="Show"
-                            onPress={() => { }}
+                            onPress={() => { if (showDetails.address) onShowDetails(showDetails.address) }}
                             disabled={showDetails.address == null}
                         />
                         {!showDetails.isClosed && (

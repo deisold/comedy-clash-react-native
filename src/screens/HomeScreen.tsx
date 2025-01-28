@@ -48,6 +48,11 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         navigation.navigate('CreateShow');
     }
 
+    const handleShowDetails = (showAddress: string) => {
+        console.log(`HomeScreen: handleShowDetails: showAddress=${showAddress}`);
+        navigation.navigate('ShowDetails', { showAddress });
+    }
+
     const ready = isReady;
 
     return (
@@ -73,7 +78,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                             data={[...Array(showAmount).keys()].map(item => ({ id: item.toString(), value: item }))}
                             extraData={reloadKey} // Ensure this triggers re-render
                             keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => <ShowListItemRow index={item.value} />}
+                            renderItem={({ item }) => <ShowListItemRow index={item.value} onShowDetails={handleShowDetails} />}
                             refreshing={refreshing} // Pull-to-refresh state
                             onRefresh={onRefresh} // Call the refresh function on pull
                         />
