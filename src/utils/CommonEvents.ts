@@ -1,15 +1,15 @@
 import { EventEmitter } from 'events';
 
-export type ModelEvents =
+export type ViewModelEvents =
     | Readonly<{ type: 'error'; message: string }>
     | Readonly<{ type: 'success'; message: string }>;
 
-export class ModelEventEmitter extends EventEmitter {
-    emit(event: ModelEvents['type'], payload: ModelEvents): boolean {
+export class ViewModelEventEmitter extends EventEmitter {
+    emit(event: ViewModelEvents['type'], payload: ViewModelEvents): boolean {
         return super.emit(event, payload);
     }
 
-    on(event: ModelEvents['type'], listener: (payload: ModelEvents) => void): this {
+    on(event: ViewModelEvents['type'], listener: (payload: ViewModelEvents) => void): this {
         return super.on(event, listener);
     }
 }

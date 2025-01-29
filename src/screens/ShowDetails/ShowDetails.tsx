@@ -7,7 +7,7 @@ import { View, Text, ActivityIndicator, Button, TouchableOpacity, StyleSheet, Fl
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { showToastSuccess, showToastError } from "../../utils/utils";
 import { CreateShowViewModelEvent } from "../createShow/CreateShowViewModel";
-import { ModelEvents } from "../../utils/CommonEvents";
+import { ViewModelEvents } from "../../utils/CommonEvents";
 import { SubmissionListItem } from "../../components/views/SubmissionListItem/SubmissionListItem";
 import { useBlockchainState } from "../../components/providers/Web3MobileStateProvider";
 
@@ -18,7 +18,7 @@ export const ShowDetails = ({ route }: { route: RouteProp<RootStackParamList, 'S
     const { loading, details, actions, error, eventEmitter } = useShowDetailsViewModel(showAddress);
 
     useEffect(() => {
-        const handleSuccess = (event: ModelEvents) => {
+        const handleSuccess = (event: ViewModelEvents) => {
             console.log(`handleSuccess: ${event.message}`);
             showToastSuccess(event.message);
         };

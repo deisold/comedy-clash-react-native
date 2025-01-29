@@ -1,7 +1,7 @@
 import { useAppContext } from '../../components/providers/AppProviders';
 import { validateShowInputUseCase, ShowInputErrorMessages } from './useCases/ValidateShowInput';
 import { useState, useRef } from 'react';
-import { EventEmitter } from 'events';
+import { ViewModelEventEmitter } from '../../utils/CommonEvents';
 
 export interface CreateShowState {
     description: string;
@@ -24,23 +24,9 @@ export interface CreateShowViewModelActions {
     onSubmit: () => void;
 }
 
-export type CreateShowViewModelEvent =
-    | Readonly<{ type: 'error'; message: string }>
-    | Readonly<{ type: 'success'; message: string }>;
-
-export class CreateShowViewModelEventEmitter extends EventEmitter {
-    emit(event: CreateShowViewModelEvent['type'], payload: CreateShowViewModelEvent): boolean {
-        return super.emit(event, payload);
-    }
-
-    on(event: CreateShowViewModelEvent['type'], listener: (payload: CreateShowViewModelEvent) => void): this {
-        return super.on(event, listener);
-    }
-}
-
 export const useCreateShowViewModel = () => {
     const { comedyTheaterRepo, isManager: appIsManager } = useAppContext();
-    const eventEmitter = useRef(new CreateShowViewModelEventEmitter()).current;
+    const eventEmitter = useRef(new ViewModelEventEmitter()).current;
 
     const [state, setState] = useState<CreateShowState>({
         description: '',
@@ -109,5 +95,5 @@ export const useCreateShowViewModel = () => {
         }
     };
 
-    return { state, actions, toastEmitter: eventEmitter };
+    return { state, actions, eventEmitter };
 };

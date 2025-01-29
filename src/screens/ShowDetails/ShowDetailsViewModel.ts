@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../../components/providers/AppProviders";
 import { Submission } from "../../data/submission";
-import { ModelEventEmitter } from "../../utils/CommonEvents";
+import { ViewModelEventEmitter } from "../../utils/CommonEvents";
 
 export interface ShowDetailsState {
     description: string;
@@ -18,7 +18,7 @@ export interface ShowDetailsViewModelActions {
 
 export const useShowDetailsViewModel = (showAddress: string) => {
     const { comedyClashRepo } = useAppContext();
-    const eventEmitter = useRef(new ModelEventEmitter()).current;
+    const eventEmitter = useRef(new ViewModelEventEmitter()).current;
     const abortControllerRef = useRef<AbortController | null>(null); // Ref to store the current AbortController
 
     const [loading, setLoading] = useState(true);

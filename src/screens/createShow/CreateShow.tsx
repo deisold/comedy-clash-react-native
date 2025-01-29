@@ -6,27 +6,28 @@ import { LabeledInput } from "../../components/views/LabeledInput";
 import { useCreateShowViewModel } from './CreateShowViewModel';
 import { showToastError } from "../../utils/utils";
 import { showToastSuccess } from "../../utils/utils";
-import { CreateShowViewModelEvent } from "./CreateShowViewModel";
+import { ViewModelEvents } from "../../utils/CommonEvents";
+
 export default function CreateShow() {
-    const { state, actions, toastEmitter } = useCreateShowViewModel();
+    const { state, actions, eventEmitter } = useCreateShowViewModel();
 
     useEffect(() => {
-        const handleSuccess = (event: CreateShowViewModelEvent) => {
+        const handleSuccess = (event: ViewModelEvents) => {
             console.log(`handleSuccess: ${event.message}`);
             showToastSuccess(event.message);
         };
 
-        const handleError = (event: CreateShowViewModelEvent) => {
+        const handleError = (event: ViewModelEvents) => {
             console.log(`handleError: ${event.message}`);
             showToastError(event.message);
         };
 
         // Attach the listeners
-        toastEmitter.on('success', handleSuccess);
-        toastEmitter.on('error', handleError);
+        eventEmitter.on('success', handleSuccess);
+        eventEmitter.on('error', handleError);
 
         return () => {
-            toastEmitter.removeAllListeners();
+            eventEmitter.removeAllListeners();
         };
     }, []); // Run only once on mount
 
