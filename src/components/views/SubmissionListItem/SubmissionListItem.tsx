@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ActivityIndicator, Button, TouchableOpacity, StyleSheet, FlatList, Keyboard } from "react-native";
+import { View, Text, Button, StyleSheet, Keyboard } from "react-native";
 import { useSubmissionListItemViewModel } from "./SubmissionListItemViewModel";
 import { Submission } from "../../../data/submission";
 import { useBlockchainState } from "@/components/providers/Web3MobileStateProvider";
