@@ -5,31 +5,12 @@ import { View, Text, SafeAreaView, Keyboard, StyleSheet, Button, ActivityIndicat
 import { LabeledInput } from "../../components/views/LabeledInput";
 import { useCreateShowViewModel } from './CreateShowViewModel';
 import { showToastError } from "../../utils/utils";
-import { showToastSuccess } from "../../utils/utils";
-import { ViewModelEvents } from "../../utils/CommonEvents";
+import { useEventEmitter } from "@/components/views/common/useToastEventEmitter";
 
 export default function CreateShow() {
     const { state, actions, eventEmitter } = useCreateShowViewModel();
 
-    useEffect(() => {
-        const handleSuccess = (event: ViewModelEvents) => {
-            console.log(`handleSuccess: ${event.message}`);
-            showToastSuccess(event.message);
-        };
-
-        const handleError = (event: ViewModelEvents) => {
-            console.log(`handleError: ${event.message}`);
-            showToastError(event.message);
-        };
-
-        // Attach the listeners
-        eventEmitter.on('success', handleSuccess);
-        eventEmitter.on('error', handleError);
-
-        return () => {
-            eventEmitter.removeAllListeners();
-        };
-    }, []); // Run only once on mount
+    useEventEmitter(eventEmitter);
 
     useEffect(() => {
         if (!state.isManager) {

@@ -3,39 +3,17 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useShowDetailsViewModel } from "./ShowDetailsViewModel";
 import { RootStackParamList } from "../../navigation/RootNavigator";
 import { globalStyles } from "../../components/views/Styles";
-import React, { useEffect } from "react";
-import { View, Text, ActivityIndicator, Button, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import React from "react";
+import { View, Text, ActivityIndicator, Button, FlatList } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import { showToastSuccess, showToastError } from "../../utils/utils";
-import { ViewModelEvents } from "../../utils/CommonEvents";
 import { SubmissionListItem } from "../../components/views/SubmissionListItem/SubmissionListItem";
-import { useBlockchainState } from "../../components/providers/Web3MobileStateProvider";
+import { useEventEmitter } from "@/components/views/common/useToastEventEmitter";
 
 export const ShowDetails = ({ route, navigation }: { route: RouteProp<RootStackParamList, 'ShowDetails'>, navigation: NativeStackNavigationProp<RootStackParamList, 'ShowDetails'> }) => {
     const { showAddress } = route.params;
-    const { canWrite, walletAddress } = useBlockchainState();
-
     const { loading, details, actions, error, eventEmitter } = useShowDetailsViewModel(showAddress);
 
-    useEffect(() => {
-        const handleSuccess = (event: ViewModelEvents) => {
-            console.log(`handleSuccess: ${event.message}`);
-            showToastSuccess(event.message);
-        };
-
-        const handleError = (event: ViewModelEvents) => {
-            console.log(`handleError: ${event.message}`);
-            showToastError(event.message);
-        };
-
-        // Attach the listeners
-        eventEmitter.on('success', handleSuccess);
-        eventEmitter.on('error', handleError);
-
-        return () => {
-            eventEmitter.removeAllListeners();
-        };
-    }, []); // Run only once on mount
+    useEventEmitter(eventEmitter);
 
     return (
         <View style={globalStyles.containerPadding}>
