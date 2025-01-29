@@ -27,6 +27,7 @@ export interface CreateShowViewModelActions {
 export const useCreateShowViewModel = () => {
     const { comedyTheaterRepo, isManager: appIsManager } = useAppContext();
     const eventEmitter = useRef(new ViewModelEventEmitter()).current;
+    const abortControllerRef = useRef<AbortController | null>(null); // Ref to store the current AbortController
 
     const [state, setState] = useState<CreateShowState>({
         description: '',
@@ -61,8 +62,10 @@ export const useCreateShowViewModel = () => {
 
             const errors: ShowInputErrorMessages = validateShowInputUseCase(state.description, state.days);
             setState(prevState => ({ ...prevState, errors }));
+
             if (Object.values(errors).every(value => value === '')) {
-                const controller = new AbortController();
+                abortControllerRef.current?.abort();
+                abortControllerRef.current = new AbortController();
 
                 try {
                     setState(prevState => ({ ...prevState, loading: true }));
@@ -70,27 +73,26 @@ export const useCreateShowViewModel = () => {
                     const txResponse = await comedyTheaterRepo!!.addShow(state.description, Number(state.days));
                     var message = 'Transcation successfully created - waiting for confirmation!';
                     setState(prevState => ({ ...prevState, successMessage: message }));
-                    eventEmitter.emit('success', { type: 'success', message: 'TEST222' });
+                    eventEmitter.emit('success', { type: 'success', message: message });
 
-                    console.log(`ViewModel: addShow: ${message}`);
+                    console.log(`CreateShowViewModel: addShow: ${message}`);
 
                     await txResponse.wait();
 
                     message = 'Transaction confirmed!';
                     setState(prevState => ({ ...prevState, successMessage: message }));
                     eventEmitter.emit('success', { type: 'success', message: message });
-                    console.log(`ViewModel: addShow: ${message}`);
+                    console.log(`CreateShowViewModel: addShow: ${message}`);
                 } catch (error: any) {
-                    if (controller.signal.aborted) return;
+                    if (abortControllerRef.current?.signal.aborted) return;
                     eventEmitter.emit('error', { type: 'error', message: 'Error creating show!' });
-                    console.error('ViewModel: Error creating show:', error);
+                    console.error('CreateShowViewModel: Error creating show:', error);
                 } finally {
-                    if (!controller.signal.aborted) {
-                        setState(prevState => ({ ...prevState, loading: false }));
-                    }
+                    if (abortControllerRef.current?.signal.aborted) return;
+                    setState(prevState => ({ ...prevState, loading: false }));
                 }
 
-                return () => controller.abort();
+                return () => abortControllerRef.current?.abort();
             }
         }
     };
