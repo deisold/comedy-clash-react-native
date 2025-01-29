@@ -4,9 +4,10 @@ import { useSubmissionListItemViewModel } from "./SubmissionListItemViewModel";
 import { Submission } from "../../../data/submission";
 import { useBlockchainState } from "@/components/providers/Web3MobileStateProvider";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { SubmissionWithIndexType } from "@/screens/ShowDetails/ShowDetailsViewModel";
 
-export const SubmissionListItem = ({ submission, precision, isClosed }: { submission: Submission, precision: bigint, isClosed: boolean }) => {
-    const { state } = useSubmissionListItemViewModel(submission, precision, isClosed);
+export const SubmissionListItem = ({ submissionWithIndex, precision, isClosed, navigateToCreateRating }: { submissionWithIndex: SubmissionWithIndexType, precision: bigint, isClosed: boolean, navigateToCreateRating: () => void }) => {
+    const { state } = useSubmissionListItemViewModel(submissionWithIndex, precision, isClosed);
     const { canWrite } = useBlockchainState();
 
     return (
@@ -27,6 +28,7 @@ export const SubmissionListItem = ({ submission, precision, isClosed }: { submis
                                 disabled={state.loading || !canWrite || !state.isVotable}
                                 onPress={() => {
                                     Keyboard.dismiss();
+                                    navigateToCreateRating();
                                 }} />
                         </View>
                     </View>

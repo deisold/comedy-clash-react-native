@@ -1,4 +1,5 @@
 import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useShowDetailsViewModel } from "./ShowDetailsViewModel";
 import { RootStackParamList } from "../../navigation/RootNavigator";
 import { globalStyles } from "../../components/views/Styles";
@@ -6,12 +7,11 @@ import React, { useEffect } from "react";
 import { View, Text, ActivityIndicator, Button, TouchableOpacity, StyleSheet, FlatList } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { showToastSuccess, showToastError } from "../../utils/utils";
-import { CreateShowViewModelEvent } from "../createShow/CreateShowViewModel";
 import { ViewModelEvents } from "../../utils/CommonEvents";
 import { SubmissionListItem } from "../../components/views/SubmissionListItem/SubmissionListItem";
 import { useBlockchainState } from "../../components/providers/Web3MobileStateProvider";
 
-export const ShowDetails = ({ route }: { route: RouteProp<RootStackParamList, 'ShowDetails'> }) => {
+export const ShowDetails = ({ route, navigation }: { route: RouteProp<RootStackParamList, 'ShowDetails'>, navigation: NativeStackNavigationProp<RootStackParamList, 'ShowDetails'> }) => {
     const { showAddress } = route.params;
     const { canWrite, walletAddress } = useBlockchainState();
 
@@ -23,7 +23,7 @@ export const ShowDetails = ({ route }: { route: RouteProp<RootStackParamList, 'S
             showToastSuccess(event.message);
         };
 
-        const handleError = (event: CreateShowViewModelEvent) => {
+        const handleError = (event: ViewModelEvents) => {
             console.log(`handleError: ${event.message}`);
             showToastError(event.message);
         };
@@ -62,9 +62,14 @@ export const ShowDetails = ({ route }: { route: RouteProp<RootStackParamList, 'S
                     data={details.submissions}
                     renderItem={({ item }) =>
                         <View style={{ marginTop: 8 }}>
-                            <SubmissionListItem submission={item}
+                            <SubmissionListItem submissionWithIndex={item}
                                 precision={details.precision}
-                                isClosed={details.isClosed} />
+                                isClosed={details.isClosed}
+                                navigateToCreateRating={() => {
+                                    navigation.navigate('CreateRatingView',
+                                        { showAddress: showAddress, submissionIndex: item.submissionIndex.toString() }
+                                    );
+                                }} />
                         </View>}
                 />
             </View>}

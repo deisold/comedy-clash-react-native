@@ -3,10 +3,12 @@ import { useAppContext } from "../../components/providers/AppProviders";
 import { Submission } from "../../data/submission";
 import { ViewModelEventEmitter } from "../../utils/CommonEvents";
 
+export interface SubmissionWithIndexType { submission: Submission, submissionIndex: number }
+
 export interface ShowDetailsState {
     description: string;
     submissionCount: number;
-    submissions: Submission[];
+    submissions: SubmissionWithIndexType[];
     isClosed: boolean;
     precision: bigint;
 }
@@ -31,17 +33,18 @@ export const useShowDetailsViewModel = (showAddress: string) => {
         precision: 0n,
     });
 
-    const buildOrderedSubmissions = async (submissionCount: number) => {
+    const buildOrderedSubmissions = async (submissionCount: number): Promise<SubmissionWithIndexType[]> => {
         if (comedyClashRepo == null || showAddress == null) {
             return [];
         }
 
-        const submissions = await Promise.all(
-            Array.from({ length: submissionCount }, (_, index) => {
-                return comedyClashRepo.getSubmission(showAddress, index);
+        const submissions: SubmissionWithIndexType[] = await Promise.all(
+            Array.from({ length: submissionCount }, async (_, index) => {
+                const submission = await comedyClashRepo.getSubmission(showAddress, index);
+                return { submission, submissionIndex: index };
             })
         );
-        return submissions.sort((a, b) => (a.averageValue < b.averageValue ? 1 : -1));
+        return submissions.sort((a, b) => (a.submission.averageValue < b.submission.averageValue ? 1 : -1));
     }
 
     const init = async () => {
@@ -61,7 +64,7 @@ export const useShowDetailsViewModel = (showAddress: string) => {
             if (controller.signal.aborted) return;
             const submissionCount = await comedyClashRepo.getSubmissionCount(showAddress);
             if (controller.signal.aborted) return;
-            const submissions = await buildOrderedSubmissions(submissionCount);
+            const submissionWithIndex = await buildOrderedSubmissions(submissionCount);
             if (controller.signal.aborted) return;
             const closed = await comedyClashRepo.isClosed(showAddress);
             if (controller.signal.aborted) return;
@@ -71,9 +74,9 @@ export const useShowDetailsViewModel = (showAddress: string) => {
             setDetails({
                 description: showDescription,
                 submissionCount: submissionCount,
-                submissions: submissions,
+                submissions: submissionWithIndex,
                 isClosed: closed,
-                precision: precision,   
+                precision: precision,
             });
         }
         catch (err: any) {
@@ -85,8 +88,9 @@ export const useShowDetailsViewModel = (showAddress: string) => {
         finally {
             if (abortControllerRef.current?.signal.aborted) return;
             setLoading(false);
-            abortControllerRef.current = null;
         }
+
+        return () => abortControllerRef.current?.abort();
     }
 
     useEffect(() => {

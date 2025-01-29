@@ -5,9 +5,10 @@ import ConnectToBlockchainView from '../components/views/ConnectView';
 import { useAppContext } from '../components/providers/AppProviders';
 import { globalStyles } from '../components/views/Styles';
 import { ShowListItemHeader, ShowListItemRow } from '../components/views/ShowListItem';
+import { RootStackParamList } from '@/navigation/RootNavigator';
+import { RouteProp } from '@react-navigation/native';
 
-export default function HomeScreen({ navigation }: { navigation: any }) {
-
+export const HomeScreen = ({ navigation }: { route: RouteProp<RootStackParamList, 'HomeScreen'>, navigation: NativeStackNavigationProp<RootStackParamList, 'HomeScreen'> }) => {
     const { isReady, comedyTheaterRepo, isManager } = useAppContext();
     const [showAmount, setShowAmount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);

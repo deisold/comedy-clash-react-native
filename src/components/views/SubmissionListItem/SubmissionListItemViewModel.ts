@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Submission } from "../../../data/submission";
 import { useBlockchainState } from "../../providers/Web3MobileStateProvider";
+import { SubmissionWithIndexType } from "@/screens/ShowDetails/ShowDetailsViewModel";
 
 export interface SubmissionListItemState {
     loading: boolean;
     id: number;
+    submissionIndex: number;
     isClosed: boolean;
     isVotable: boolean;
     canWrite: boolean;
@@ -16,22 +17,23 @@ export interface SubmissionListItemState {
     averageValue: string;
 }
 
-export const useSubmissionListItemViewModel = (submission: Submission, precision: bigint, isClosed: boolean) => {
+export const useSubmissionListItemViewModel = (submissionWithIndex: SubmissionWithIndexType , precision: bigint, isClosed: boolean) => {
     const { canWrite, walletAddress } = useBlockchainState();
 
     const abortControllerRef = useRef<AbortController | null>(null); // Ref to store the current AbortController
 
     const [state, setState] = useState<SubmissionListItemState>({
         loading: true,
-        id: submission.id,
-        isClosed: true,
-        isVotable: false,
-        canWrite: false,
-        name: submission.name,
-        topic: submission.topic,
-        preview: submission.preview,
-        averageTotal: submission.averageTotal,
-        averageCount: submission.averageCount,
+        id: submissionWithIndex.submission.id,
+        submissionIndex: submissionWithIndex.submissionIndex,
+        isClosed: isClosed,
+        isVotable: walletAddress != submissionWithIndex.submission.artistAddress,
+        canWrite: canWrite,
+        name: submissionWithIndex.submission.name,
+        topic: submissionWithIndex.submission.topic,
+        preview: submissionWithIndex.submission.preview,
+        averageTotal: submissionWithIndex.submission.averageTotal,
+        averageCount: submissionWithIndex.submission.averageCount,
         averageValue: '',
     });
 
@@ -43,6 +45,7 @@ export const useSubmissionListItemViewModel = (submission: Submission, precision
 
             setState((prev) => ({ ...prev, loading: true }));
 
+            const submission = submissionWithIndex.submission;
             const scaledValue = submission.averageValue * 100n; // Scaled for two decimals
             const averageWithTwoDecimals = scaledValue / precision; // Divide by PRECISION to scale it back down
             let result = (averageWithTwoDecimals / 100n).toString(); // First divide to remove the scaling
@@ -54,19 +57,12 @@ export const useSubmissionListItemViewModel = (submission: Submission, precision
             setState((prev) => ({
                 ...prev,
                 loading: false,
-                id: submission.id,
-                isClosed: isClosed,
-                isVotable: walletAddress != submission.artistAddress,
-                canWrite: canWrite,
-                name: submission.name,
-                topic: submission.topic,
-                preview: submission.preview,
-                averageTotal: submission.averageTotal,
-                averageCount: submission.averageCount,
                 averageValue: result,
             }));
 
         } catch (error: unknown) {
+            if (abortControllerRef.current?.signal.aborted) return;
+
             if (error instanceof Error) {
                 console.log(`SubmissionListItem: error: ${error.message}`);
             } else {
@@ -86,7 +82,7 @@ export const useSubmissionListItemViewModel = (submission: Submission, precision
 
         return () => abortControllerRef.current?.abort();
 
-    }, [submission, precision, isClosed, walletAddress, canWrite]);
+    }, [submissionWithIndex, precision, isClosed, walletAddress, canWrite]);
 
     return { state };
 }
