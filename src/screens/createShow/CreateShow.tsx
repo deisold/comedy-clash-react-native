@@ -6,11 +6,17 @@ import { LabeledInput } from "../../components/views/LabeledInput";
 import { useCreateShowViewModel } from './CreateShowViewModel';
 import { showToastError } from "../../utils/utils";
 import { useEventEmitter } from "@/components/views/common/useToastEventEmitter";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/RootNavigator';
 
-export default function CreateShow() {
+export default function CreateShow({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList, 'CreateShow'> }) {
     const { state, actions, eventEmitter } = useCreateShowViewModel();
 
     useEventEmitter(eventEmitter);
+
+    //empty title
+    navigation.setOptions({ title: '' });
+
 
     useEffect(() => {
         if (!state.isManager) {

@@ -6,13 +6,21 @@ import { useCreateRatingViewModel } from './CreateRatingViewModel';
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/RootNavigator";
 import { useEventEmitter } from "@/components/views/common/useToastEventEmitter";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useEffect } from "react";
 
-export const CreateRatingView = ({ route }: { route: RouteProp<RootStackParamList, 'CreateRatingView'> }) => {
-    const { showAddress, submissionIndex } = route.params;
+export const CreateRatingView = ({ route, navigation }: {
+    route: RouteProp<RootStackParamList, 'CreateRatingView'>,
+    navigation: NativeStackNavigationProp<RootStackParamList, 'CreateRatingView'>
+}) => {
+    const { showAddress, submissionIndex, showDescription } = route.params;
     const { state, actions, eventEmitter } = useCreateRatingViewModel(showAddress, submissionIndex);
 
     useEventEmitter(eventEmitter);
-
+    useEffect(() => {
+        navigation.setOptions({ title: showDescription });
+    }, [showDescription]);
+    
     return (
         <SafeAreaView style={globalStyles.containerPadding}>
             <View style={globalStyles.sectionContainer}>

@@ -25,7 +25,7 @@ export const useShowDetailsViewModel = (showAddress: string) => {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [details, setDetails] = useState<ShowDetailsState>({
+    const [data, setData] = useState<ShowDetailsState>({
         description: '',
         submissionCount: 0,
         submissions: [],
@@ -71,7 +71,7 @@ export const useShowDetailsViewModel = (showAddress: string) => {
             const precision = await comedyClashRepo.getPrecision(showAddress);
             if (controller.signal.aborted) return;
 
-            setDetails({
+            setData({
                 description: showDescription,
                 submissionCount: submissionCount,
                 submissions: submissionWithIndex,
@@ -110,7 +110,7 @@ export const useShowDetailsViewModel = (showAddress: string) => {
 
     return {
         loading,
-        details,
+        data,
         error,
         actions,
         eventEmitter

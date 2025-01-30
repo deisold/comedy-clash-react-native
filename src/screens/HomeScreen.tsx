@@ -6,15 +6,20 @@ import { useAppContext } from '../components/providers/AppProviders';
 import { globalStyles } from '../components/views/Styles';
 import { ShowListItemHeader, ShowListItemRow } from '../components/views/ShowListItem';
 import { RootStackParamList } from '@/navigation/RootNavigator';
-import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-export const HomeScreen = ({ navigation }: { route: RouteProp<RootStackParamList, 'HomeScreen'>, navigation: NativeStackNavigationProp<RootStackParamList, 'HomeScreen'> }) => {
+export const HomeScreen = ({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList, 'HomeScreen'> }) => {
     const { isReady, comedyTheaterRepo, isManager } = useAppContext();
     const [showAmount, setShowAmount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [reloadKey, setReloadKey] = useState(0); // State to trigger re-render
     const [refreshing, setRefreshing] = useState(false); // Refreshing state
+
+    useEffect(() => {
+        //empty title
+        navigation.setOptions({ title: '' });
+    }, []);
 
     const fetchData = async () => {
         setIsLoading(true);

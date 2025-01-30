@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useShowDetailsViewModel } from "./ShowDetailsViewModel";
 import { RootStackParamList } from "../../navigation/RootNavigator";
 import { globalStyles } from "../../components/views/Styles";
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, ActivityIndicator, Button, FlatList } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { SubmissionListItem } from "../../components/views/SubmissionListItem/SubmissionListItem";
@@ -11,9 +11,24 @@ import { useEventEmitter } from "@/components/views/common/useToastEventEmitter"
 
 export const ShowDetails = ({ route, navigation }: { route: RouteProp<RootStackParamList, 'ShowDetails'>, navigation: NativeStackNavigationProp<RootStackParamList, 'ShowDetails'> }) => {
     const { showAddress } = route.params;
-    const { loading, details, actions, error, eventEmitter } = useShowDetailsViewModel(showAddress);
+    const { loading, data, actions, error, eventEmitter } = useShowDetailsViewModel(showAddress);
 
     useEventEmitter(eventEmitter);
+    
+    useEffect(() => {
+        //empty title
+        navigation.setOptions({ title: '' });
+    }, []);
+
+    const navigateToCreateRating = (submissionIndex: string) => {
+        navigation.navigate('CreateRatingView',
+            {
+                showAddress: showAddress,
+                showDescription: data.description,
+                submissionIndex: submissionIndex
+            }
+        );
+    }
 
     return (
         <View style={globalStyles.containerPadding}>
@@ -33,21 +48,17 @@ export const ShowDetails = ({ route, navigation }: { route: RouteProp<RootStackP
             </View>}
             {!loading && !error && <View>
                 <View style={globalStyles.sheetContent}>
-                    <Text style={globalStyles.sheetText}>{details.description}</Text>
-                    <Text style={globalStyles.sheetText}>We got {details.submissionCount} submissions so far</Text>
+                    <Text style={globalStyles.sheetText}>{data.description}</Text>
+                    <Text style={globalStyles.sheetText}>We got {data.submissionCount} submissions so far</Text>
                 </View>
                 <FlatList style={{ marginTop: 20 }}
-                    data={details.submissions}
+                    data={data.submissions}
                     renderItem={({ item }) =>
                         <View style={{ marginTop: 8 }}>
                             <SubmissionListItem submissionWithIndex={item}
-                                precision={details.precision}
-                                isClosed={details.isClosed}
-                                navigateToCreateRating={() => {
-                                    navigation.navigate('CreateRatingView',
-                                        { showAddress: showAddress, submissionIndex: item.submissionIndex.toString() }
-                                    );
-                                }} />
+                                precision={data.precision}
+                                isClosed={data.isClosed}
+                                navigateToCreateRating={() => { navigateToCreateRating(item.submissionIndex.toString()); }} />
                         </View>}
                 />
             </View>}

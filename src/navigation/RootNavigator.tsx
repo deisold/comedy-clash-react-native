@@ -9,7 +9,7 @@ export type RootStackParamList = {
     HomeScreen: undefined;
     CreateShow: undefined;
     ShowDetails: { showAddress: string };
-    CreateRatingView: { showAddress: string, submissionIndex: string };
+    CreateRatingView: { showAddress: string, showDescription: string, submissionIndex: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -28,7 +28,7 @@ export default function RootNavigator() {
                 <Stack.Screen
                     name="CreateRatingView"
                     component={CreateRatingView}
-                    initialParams={{ showAddress: '', submissionIndex: '' }}
+                    initialParams={{ showAddress: '', showDescription: '', submissionIndex: '' }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

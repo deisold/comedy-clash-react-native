@@ -8,9 +8,8 @@ export const globalStyles = StyleSheet.create({
     mainTitle: {
         fontSize: 42,
         fontWeight: '600',
-        alignItems: 'flex-start',
         padding: 10,
-        paddingVertical: 20,
+        paddingBottom: 20,
     },
     sectionTitle: {
         fontSize: 24,
